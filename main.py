@@ -13,10 +13,10 @@ GPIO.setup(gpio_pin_numbers, GPIO.OUT)
 gpio_objects = []
 
 class IllnessItem:
-    def __init__(self, name, frequencies, fill_time):
+    def __init__(self, name, frequencies, duty_cycle):
         self.name = name
         self.frequencies = frequencies
-        self.fill_time = fill_time
+        self.duty_cycle = duty_cycle
 
 class Illnesses:
 
@@ -43,10 +43,14 @@ class Illnesses:
 						name = split[0]
 						if HasStringNumbers(str(split)):
 							frequencies = split[1].split(",")
-							if len(frequencies) == 10:
-								for i in frequencies:
-									frequencies_decimal.append(str(Decimal(i)))
-								self.add(name, frequencies_decimal, 50)
+							if len(frequencies) >= 10:
+								for i in range(0, len(frequencies)-1):
+									frequencies_decimal.append(str(Decimal(frequencies[i])))
+								if len(frequencies)	== 11:
+									duty_cycle = int(frequencies[10])
+								else:
+									duty_cycle = 50
+								self.add(name, frequencies_decimal, duty_cycle)
 					except Exception:
 						pass
 
@@ -73,7 +77,7 @@ def play(illness):
 		gpio_obj = gpio_objects[i]
 		gpio_obj.ChangeFrequency(Decimal(frequency))
 		gpio_obj.start(illness.fill_time)
-	
+
 def stop():
 	# stop playing frequencies and release resources
 	GPIO.cleanup()
@@ -85,7 +89,9 @@ for i, pin in enumerate(gpio_pin_numbers):
 
 illnesses = Illnesses()
 illnesses.load()
+illnesses.write()
 illness_name = 'Wolfram Syndrome'
+x = illnesses.get(illness_name)
 play(illnesses.get(illness_name))
 raw_input("Press Enter to Stop")
 stop()
