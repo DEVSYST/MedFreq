@@ -76,7 +76,7 @@ def play(illness):
 	for i, frequency in enumerate(illness.frequencies):
 		gpio_obj = gpio_objects[i]
 		gpio_obj.ChangeFrequency(Decimal(frequency))
-		gpio_obj.start(illness.fill_time)
+		gpio_obj.start(illness.duty_cycle)
 
 def stop():
 	# stop playing frequencies and release resources
